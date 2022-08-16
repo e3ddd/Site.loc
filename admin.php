@@ -16,7 +16,20 @@ function getUserData()
     }
 }
 
-
+function userNumber()
+{
+    $num = 0;
+    $arr = [];
+    if(($file = fopen("data/users.csv", "r")) !== false)
+    {
+        while(($data = fgetcsv($file, 1000, ",")) !== false)
+        {
+            $num++;
+            $arr[] = $num;
+        }
+        return $arr;
+    }
+}
 
 function userExists($email)
 {
@@ -45,11 +58,11 @@ function edit($email, $pass, $userNum)
         while (($data = fgetcsv($file, 1000, ",")) !== false)
         {
             $num++;
-            if($num === $userNum)
+            if($num == $userNum)
             {
-                continue;
+             continue;
             }
-            fputcsv($newFile, $data);
+           fputcsv($newFile, $data);
         }
         fputcsv($newFile, $user);
         fclose($newFile);
@@ -109,17 +122,20 @@ function sortAscending(): array
 {
 $users = [
     'email' => [],
-    'password' => []
+    'password' => [],
+    'num' => []
 ];
 
 for($i=0;$i<=count(getUserData()['email']);$i++)
 {
     $users['email'][$i] = getUserData()['email'][$i];
     $users['password'][$i] = getUserData()['password'][$i];
+    $users['num'][$i] = userNumber()[$i];
 }
 
 sort($users['email']);
 sort($users['password']);
+sort($users['num']);
 
 return $users;
 }
@@ -128,17 +144,20 @@ function sortDescending(): array
 {
     $users = [
         'email' => [],
-        'password' => []
+        'password' => [],
+        'num' => []
     ];
 
     for($i=0;$i<=count(getUserData()['email']);$i++)
     {
         $users['email'][$i] = getUserData()['email'][$i];
         $users['password'][$i] = getUserData()['password'][$i];
+        $users['num'][$i] = userNumber()[$i];
     }
 
     rsort($users['email']);
     rsort($users['password']);
+    rsort($users['num']);
 
     return $users;
 }
@@ -147,7 +166,7 @@ function sortDescending(): array
 
 if($_REQUEST['edit'])
 {
-    editUser($_POST['email'], $_POST['password'],  $_POST['num']);
+   editUser($_POST['email'], $_POST['password'],  $_POST['num']);
 }
 
 if($_REQUEST['delete'])

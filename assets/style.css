@@ -23,7 +23,7 @@ body
     justify-content: center;
 }
 
-input[type=radio]
+input[type=checkbox]
 {
     opacity: 0;
 }

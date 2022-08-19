@@ -1,68 +1,66 @@
 <?php
-function getUserData()
+
+function getUsersFile(bool $read = true)
 {
-    if(($file = fopen("data/users.csv", "r")) !== false)
-    {
-        $users = [
-            'email' => [],
-            'password' => []
+    $file = fopen("data/users.csv", $read ? "r" : "a+");
+    if(!$file){
+        throw new RuntimeException('Can\'t open file');
+    }
+    return $file;
+}
+
+function getTemporaryFile()
+{
+    $file = fopen("data/newUsers.csv", "a+");
+    if(!$file){
+        throw new RuntimeException('Can\'t open file');
+    }
+    return $file;
+}
+
+function getUserData(): array
+{
+    $file = getUsersFile();
+    $users = [];
+    $idx = 0;
+    while(($data = fgetcsv($file, 1000, ",")) !== false) {
+        $users[] = [
+            'email' => $data[0],
+            'password' => $data[1],
+            'id' => $idx++
         ];
-        while(($data = fgetcsv($file, 1000, ",")) !== false)
-        {
-         $users['email'][] = $data[0];
-         $users['password'][] = $data[1];
-        }
-        return $users;
     }
+    return $users;
 }
 
-function userNumber()
+function userExists($email): bool
 {
-    $num = 0;
-    $arr = [];
-    if(($file = fopen("data/users.csv", "r")) !== false)
-    {
-        while(($data = fgetcsv($file, 1000, ",")) !== false)
-        {
-            $num++;
-            $arr[] = $num;
-        }
-        return $arr;
+    $result = false;
+     foreach (getUserData() as $user){
+         if ($email == $user['email'])
+         {
+             $result = true;
+             break;
+         }
     }
-}
-
-function userExists($email)
-{
-    if(($file = fopen("data/users.csv", "r")) !== false)
-    {
-        $result = false;
-        while(($data = fgetcsv($file, 1000, ",")) !== false)
-        {
-            if ($email == $data[0])
-            {
-                $result = true;
-            }
-        }
-        fclose($file);
-        return $result;
-    }
+    fclose(getUsersFile());
+    return $result;
 }
 
 function edit($email, $pass, $userNum)
 {
     $user = [$email, $pass];
-    $num = 0;
-    if (($file = fopen("data/users.csv", "r")) !== false)
-    {
-        $newFile = fopen("data/newUsers.csv", "a+");
-        while (($data = fgetcsv($file, 1000, ",")) !== false)
-        {
-            $num++;
-            if($num == $userNum)
-            {
-             continue;
+    $file = getUsersFile();
+    if($file){
+        $newFile = getTemporaryFile();
+        if($newFile){
+            foreach(getUserData() as $users){
+                var_dump($userNum);
+                if($users['id'] == $userNum){
+                    continue;
+                }
+                fputcsv($newFile, $users);
             }
-           fputcsv($newFile, $data);
         }
         fputcsv($newFile, $user);
         fclose($newFile);
@@ -73,13 +71,11 @@ function edit($email, $pass, $userNum)
 
 function delete($email)
 {
-    if (($file = fopen("data/users.csv", "r")) !== false)
-    {
-        $newFile = fopen("data/newUsers.csv", "a+");
-        while (($data = fgetcsv($file, 1000, ",")) !== false)
-        {
-            if($email === $data[0])
-            {
+    $file = getUsersFile();
+    if ($file) {
+        $newFile = getTemporaryFile();
+        while (($data = fgetcsv($file, 1000, ",")) !== false){
+            if($email === $data[0]){
                 continue;
             }
             fputcsv($newFile, $data);
@@ -93,9 +89,9 @@ function delete($email)
 
 function editUser($email, $pass, $userNum)
 {
-    if(userExists($email) === true)
+    if(userExists($email))
     {
-        return "E-mail exist !";
+       return "E-mail exist !";
     }
     else
     {
@@ -118,61 +114,45 @@ function deleteUser($email)
     }
 }
 
-function sortAscending(): array
+function ascending($a, $b): int
 {
-$users = [
-    'email' => [],
-    'password' => [],
-    'num' => []
-];
-
-for($i=0;$i<=count(getUserData()['email']);$i++)
-{
-    $users['email'][$i] = getUserData()['email'][$i];
-    $users['password'][$i] = getUserData()['password'][$i];
-    $users['num'][$i] = userNumber()[$i];
+    if ($a == $b) {
+        return 0;
+    }
+    return ($a < $b) ? -1 : 1;
 }
 
-sort($users['email']);
-sort($users['password']);
-sort($users['num']);
+function descending($a, $b): int
+{
+    if ($a == $b) {
+        return 0;
+    }
+    return ($a > $b) ? -1 : 1;
+}
 
-return $users;
+function sortAscending()
+{
+    $users = getUserData();
+    uasort($users, 'ascending');
+    return $users;
 }
 
 function sortDescending(): array
 {
-    $users = [
-        'email' => [],
-        'password' => [],
-        'num' => []
-    ];
-
-    for($i=0;$i<=count(getUserData()['email']);$i++)
-    {
-        $users['email'][$i] = getUserData()['email'][$i];
-        $users['password'][$i] = getUserData()['password'][$i];
-        $users['num'][$i] = userNumber()[$i];
-    }
-
-    rsort($users['email']);
-    rsort($users['password']);
-    rsort($users['num']);
-
+    $users = getUserData();
+    uasort($users, 'descending');
     return $users;
 }
 
-
-
-if($_REQUEST['edit'])
-{
-   editUser($_POST['email'], $_POST['password'],  $_POST['num']);
+if($_REQUEST['edit']) {
+    editUser($_POST['email'], $_POST['password'],  $_POST['num']);
 }
 
-if($_REQUEST['delete'])
-{
+if($_REQUEST['delete']) {
     deleteUser($_POST['email']);
 }
+
+
 
 
 

@@ -1,56 +1,65 @@
 <?php
+function getUsersFile(bool $read = true)
+{
+    $file = fopen("data/users.csv", $read ? "r" : "a+");
+    if(!$file){
+        throw new RuntimeException('Can\'t open file');
+    }
+    return $file;
+}
+
 function userExists($email)
 {
-    if(($file = fopen("data/users.csv", "r")) !== false)
+    $file = getUsersFile();
+    if($file)
     {
         $result = false;
         while(($data = fgetcsv($file, 1000, ",")) !== false)
         {
-            if ($email == $data[0])
+            if ($email === $data[0])
             {
                 $result = true;
+                break;
             }
         }
         fclose($file);
-            return $result;
-    }
-}
-
-function putUserToFile($email, $pass)
-{
-    $result = false;
-    if(!empty($email) && !empty($pass))
-    {
-        $user = [$email, $pass];
-        $file = fopen("data/users.csv", "a+");
-        fputcsv($file, $user);
-        fclose($file);
-        $result = true;
-    }
-    else
-    {
         return $result;
     }
 }
 
-function regUser($email, $pass)
+function putUserToFile($email, $password)
 {
-    if(!userExists($_POST['email']))
+
+    if(!empty($email) && !empty($password))
     {
-        if(putUserToFile($_POST['email'], $_POST['password']) === false)
-        {
-            echo "Fields must not be empty!";
-        }
+        $user = [$email, $password];
+        $file = getUsersFile(false);
+        fputcsv($file, $user);
+        fclose($file);
+        return true;
     }
     else
     {
-        echo "Your E-mail exist !";
+       return false;
     }
+}
+
+function regUser($email, $password)
+{
+    if(!userExists($email)) {
+        if(!putUserToFile($email, $password)) {
+             return "Fields must not be empty!";
+            }
+        }
+        else {
+             return  "Your E-mail exist !";
+        }
 }
 
 function searchUser($email)
 {
-    if(($file = fopen("data/users.csv", "r")) !== false)
+    $file = getUsersFile();
+    if($file)
     {
         while(($data = fgetcsv($file, 1000, ",")) !== false)
         {
@@ -60,21 +69,17 @@ function searchUser($email)
             }
         }
         fclose($file);
-        return true;
     }
 }
 
 
 
-if($_REQUEST["submitReg"])
-{
-    regUser($_POST['email'], $_POST['password']);
+if($_REQUEST["submitReg"]) {
+   echo  regUser($_POST['email'], $_POST['password']);
 }
 
-if($_REQUEST['search'])
-{
-    foreach (searchUser($_POST['email']) as $item)
-    {
+if($_REQUEST['search']) {
+    foreach (searchUser($_POST['email']) as $item) {
         echo $item . "<br>";
     }
 }

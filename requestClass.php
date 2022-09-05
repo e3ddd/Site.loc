@@ -18,6 +18,11 @@ class Request
         $this->order = $order;
     }
 
+    public function __isset($name)
+    {
+        return $this->name = $name;
+    }
+
     public function __get($name)
     {
         $orderLetters = str_split($this->order, 1);

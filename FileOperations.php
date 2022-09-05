@@ -45,7 +45,7 @@ class FileOperations
         return $newData;
     }
 
-    public function existItem($needleItem, $name, $filePath)
+    public function existItem($needleItem, $name, $filePath) : array|bool
     {
         $result = false;
         foreach ($this->getFileData($filePath) as $item) {
@@ -57,7 +57,7 @@ class FileOperations
         return $result;
     }
 
-    public function renameFunc($filePath, $newFilePath)
+    public function renameFunc($filePath, $newFilePath): bool
     {
         return rename($newFilePath, $filePath);
     }
@@ -71,7 +71,7 @@ class EditOperations extends FileOperations
         parent::__construct($typeRead, $data);
     }
 
-    public function deleteFileDataItem($filePath, $newFilePath, $needleItem)
+    public function deleteFileDataItem($filePath, $newFilePath, $needleItem): bool
     {
         foreach ($this->getFileData($filePath) as $item){
             if($needleItem === $item['email']){

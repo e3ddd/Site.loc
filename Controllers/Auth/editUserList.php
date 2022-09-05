@@ -14,9 +14,9 @@ switch ($requests->action){
         $user = new EditOperations('a+', $user = ['email', 'password']);
         $newUser = new RenderPage($editItem);
         $newUser->setContent('email', $requests->email)
-                 ->setContent('password', $requests->password);
+                 ->setContent('password', $requests->password)
+                 ->setContent('oldEmail', $requests->email);
         echo $newUser->render();
-        $user->deleteFileDataItem(getRealPath('data/users.csv'), getRealPath("data/newUsers.csv"), $requests->email);
         break;
 
     case "Delete":
@@ -27,7 +27,11 @@ switch ($requests->action){
     case "Ok":
         $user = new EditOperations('a+', $user = ['email', 'password']);
         if(!$user->existItem($requests->email, 'email', getRealPath("data/users.csv"))){
-            $user->putToFile(getRealPath("data/users.csv"), [$requests->email, $requests->password]);
+            if($user->deleteFileDataItem(getRealPath('data/users.csv'), getRealPath("data/newUsers.csv"), $requests->oldEmail)){
+                $user->putToFile(getRealPath("data/users.csv"), [$requests->email, $requests->password]);
+            }
+        }else{
+            echo "E-mail exist !";
         }
         break;
 }

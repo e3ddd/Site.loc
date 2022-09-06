@@ -1,8 +1,5 @@
-<?php
 
-include "View/viewClass.php";
-$layoutReg = file_get_contents("templates/RegAndSearch/regLayout.php");
-$test = new RenderPage($layoutReg);
-
-
-var_dump($test);
+$item = new RenderPage($listItem);
+$item->setContent('email', $user['email'])
+    ->setContent('password', $user['password']);
+$items .=  $item->render();

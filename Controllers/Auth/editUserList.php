@@ -10,6 +10,7 @@ $requests = Request::getInstance();
 $requests->setOrder('PGC');
 
 switch ($requests->action){
+
     case "Edit":
         $user = new EditOperations('a+', $user = ['email', 'password']);
         $newUser = new RenderPage($editItem);

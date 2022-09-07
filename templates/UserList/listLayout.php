@@ -10,12 +10,12 @@
 </head>
 <body>
 <div class="container-fluid">
-    <div class="row">
-            <h4>Admin Panel</h4>
-        ##LIST##
-    </div>
+    <h4>Admin Panel</h4>
     <div class="row">
         ##PAGEBUTTONS##
+    </div>
+    <div class="row">
+        ##LIST##
     </div>
 </div>
 </body>

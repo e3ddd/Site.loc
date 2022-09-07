@@ -2,13 +2,15 @@
 
 class Pager
 {
-    private int $amountDataItems;
+    public int $amountDataItems;
     public int $limit;
+    private int $page;
 
-    public function __construct($amountDataItems, $limit)
+    public function __construct($amountDataItems, $limit, $page)
     {
         $this->amountDataItems = $amountDataItems;
         $this->limit = $limit;
+        $this->page = $page;
     }
 
     public function countPages()
@@ -16,18 +18,30 @@ class Pager
         return ceil($this->amountDataItems/$this->limit);
     }
 
-    public function currentNum($page)
+
+    public function currentNum()
     {
-        return $this->limit * $page;
+        return $this->limit * $this->page;
     }
 
-    public function hasPrevPage()
+    public function limitNum()
     {
-
+        return $this->currentNum() + $this->limit;
     }
 
-    public function hasNextPage()
+    public function hasPrevPage($num)
     {
+        if($num < $this->countPages()-($this->countPages()-1)){
+            return true;
+        }
+        return false;
+    }
 
+    public function hasNextPage($num)
+    {
+        if($num < $this->countPages() - 1){
+            return true;
+        }
+        return false;
     }
 }

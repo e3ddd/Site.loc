@@ -10,7 +10,7 @@ $regUser = new FileOperations("a+",
     $user = [$requests->email, $requests->password]);
 
 $getUsersData = new FileOperations("r",
-    $user = ['email', 'password']);
+    $userID = ['email', 'password']);
 
 if(empty($requests->email) || empty($requests->password)){
     echo "Email or password not entered !";
@@ -18,7 +18,7 @@ if(empty($requests->email) || empty($requests->password)){
       if($getUsersData->existItem($requests->email, 'email', getRealPath("data/users.csv"))){
           echo "Your e-mail exist !";
       }else{
-          $regUser->putToFile(getRealPath("data/users.csv"));
+          $regUser->putToFile(getRealPath("data/users.csv"), $user);
       }
     }
 

@@ -17,7 +17,7 @@
             </div>
 
             <div class="col border rounded p-4">
-                <form action="index.php?page=Auth/AdminPanel" method="POST">
+                <form action="index.php?page=Auth/AdminPanel&num=0" method="POST">
                     <input class="btn btn-primary" type="submit" name="action" value="Admin Panel">
                 </form>
             </div>

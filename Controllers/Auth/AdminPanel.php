@@ -8,6 +8,8 @@ include getRealPath("Pager.php");
 $layoutList = file_get_contents("templates/UserList/listLayout.php");
 $listItem = file_get_contents("templates/UserList/listItem.php");
 $pageButtons = file_get_contents("templates/UserList/pageBut.php");
+$pagerItemTemplate = file_get_contents("templates/UserList/pagerItem.php");
+$pagerTemplate = file_get_contents("templates/UserList/pager.php");
 $title = "Admin Panel";
 
 $requests = Request::getInstance();
@@ -20,21 +22,57 @@ $items = "";
 
 $URL = parse_url($_SERVER['REQUEST_URI']);
 
-$URL = str_split($URL['query'] , 1);
+parse_str($URL['query'] , $queryString);
 
-$numPage = array_pop($URL);
+$pager = new Pager(
+    count($users->getFileData(getRealPath("data/users.csv"))),
+    10,
+        $queryString['num'] ?? 0
+);
 
-$pager = new Pager(count($users->getFileData(getRealPath("data/users.csv"))), 10, $numPage);
+//var_dump( $pager->generateURL("page=" . $URL['scheme'], 123));
+//exit;
 
-for($i=0; $i<$pager->countPages(); $i++){
+$pages = [];
+
+if ($pager->hasPrevPage()) {
+    $pages[] = (new RenderPage($pagerItemTemplate))
+        ->setContent('URL', $URL['path'] . "?" . $pager->generateURL("page=" . $queryString['page'], $queryString['num'] - 1))
+        ->setContent('TITLE', 'Prev')
+        ->render();
+}
+
+for($i=0; $i<$pager->countPages(); $i++) {
+    $pages[] = (new RenderPage($pagerItemTemplate))
+        ->setContent('URL', $URL['path'] . "?" . $pager->generateURL("page=" . $queryString['page'], $i))
+        ->setContent('TITLE', $i + 1)
+        ->render();
+}
+
+if ($pager->hasNextPage()) {
+    $pages[] = (new RenderPage($pagerItemTemplate))
+        ->setContent('URL', $URL['path'] . "?" . $pager->generateURL("page=" . $queryString['page'], $queryString['num'] + 1))
+        ->setContent('TITLE', 'Next')
+        ->render();
+}
+
+
+$pages = (new RenderPage($pagerTemplate))
+    ->setContent(
+        'items',
+        implode('', $pages)
+    )
+    ->render();
+
+for($i=0; $i<$pager->countPages(); $i++) {
     $pageNum = $i * $pager->limit;
-    if($pageNum != $pager->limitNum()){
-        for($j=$pager->currentNum(); $j<$pager->limitNum(); $j++){
+    if ($pageNum != $pager->limitNum()) {
+        for ($j = $pager->currentNum(); $j < $pager->limitNum(); $j++) {
             $item = new RenderPage($listItem);
             $item->setContent('email', $user[$j]['email'])
                 ->setContent('password', $user[$j]['password']);
-            $items .=  $item->render();
-            if($j == $pager->amountDataItems - 1){
+            $items .= $item->render();
+            if ($j == $pager->amountDataItems - 1) {
                 break;
             }
         }
@@ -42,32 +80,11 @@ for($i=0; $i<$pager->countPages(); $i++){
     break;
 }
 
-switch ($requests->action){
-
-    case "Next >>":
-        if($pager->hasNextPage($numPage)){
-            $numPage++;
-        }else{
-            $numPage = $pager->countPages()-1;
-        }
-        break;
-
-    case "<< Prev":
-        if(!$pager->hasPrevPage($numPage)){
-            $numPage--;
-        }else{
-            $numPage = 0;
-        }
-        break;
-
-}
 
 $list->setContent('title', $title)
     ->setContent('list', $items)
-    ->setContent('pageButtons', $pageButtons)
-    ->setContent('num', $numPage);
-//    ->setContent('pagenumber', $numPage + 1);
-
-
+    ->setContent('pager', $pages)
+    ->setContent('num', $pager->getCurrentPage());
 
 echo $list->render();
+

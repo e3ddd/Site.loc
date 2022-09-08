@@ -29,19 +29,30 @@ class Pager
         return $this->currentNum() + $this->limit;
     }
 
-    public function hasPrevPage($num)
+    public function hasPrevPage()
     {
-        if($num < $this->countPages()-($this->countPages()-1)){
-            return true;
-        }
-        return false;
+        return $this->page > 0;
     }
 
-    public function hasNextPage($num)
+    public function hasNextPage()
     {
-        if($num < $this->countPages() - 1){
-            return true;
+        return $this->countPages() > $this->page + 1;
+    }
+
+    public function getCurrentPage()
+    {
+        return $this->page;
+    }
+
+    public function generateURL(string $url, int $num)
+    {
+        $queryString = parse_url($url, PHP_URL_QUERY);
+        parse_str($queryString, $items);
+        $items['num'] = $num;
+        $newQuerystring = http_build_query($items);
+        if (empty($queryString)) {
+            return $url . '&' . $newQuerystring;
         }
-        return false;
+        return str_replace('&'.$queryString, '&' . $newQuerystring, $url);
     }
 }

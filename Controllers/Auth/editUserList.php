@@ -4,6 +4,8 @@ include getRealPath("requestClass.php");
 include getRealPath("FileOperations.php");
 
 $editItem = file_get_contents("templates/UserList/editItem.php");
+$listLayout = file_get_contents("templates/UserList/listLayout.php");
+$product = file_get_contents("templates/UserList/productList.php");
 
 $requests = Request::getInstance();
 
@@ -23,6 +25,18 @@ switch ($requests->action){
     case "Delete":
         $user = new EditOperations('a+', $user = ['email', 'password']);
         $user->deleteFileDataItem(getRealPath('data/users.csv'), getRealPath("data/newUsers.csv"), $requests->email);
+        break;
+
+    case "Products":
+        $product = (new RenderPage($product))
+            ->setContent('email', $requests->email)
+            ->setContent('product', $requests->product)
+            ->render();
+
+        $productList = (new RenderPage($listLayout))
+            ->setContent('title', "Product List")
+            ->setContent('list', $product);
+            echo  $productList->render();
         break;
 
     case "Ok":

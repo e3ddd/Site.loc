@@ -71,7 +71,7 @@ class EditOperations extends FileOperations
         parent::__construct($typeRead, $data);
     }
 
-    public function deleteFileDataItem($filePath, $newFilePath, $needleItem): bool
+    public function deleteFileDataItem($filePath, $newFilePath, $needleItem)
     {
         foreach ($this->getFileData($filePath) as $item){
             if($needleItem === $item['email']){
@@ -80,7 +80,8 @@ class EditOperations extends FileOperations
                 $this->putToFile($newFilePath, $item);
             }
         }
-        return $this->renameFunc($filePath, $newFilePath);
+        return true;
+//        return $this->renameFunc($filePath, $newFilePath);
     }
 }
 

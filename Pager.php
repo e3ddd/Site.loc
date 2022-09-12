@@ -10,7 +10,7 @@ class Pager
     {
         $this->amountDataItems = $amountDataItems;
         $this->limit = $limit;
-        $this->page = $page;
+        $this->page = min($this->countPages() - 1, max($page, 0));
     }
 
     public function countPages()
@@ -27,6 +27,11 @@ class Pager
     public function limitNum()
     {
         return $this->currentNum() + $this->limit;
+    }
+
+    public function activeItem($num)
+    {
+        return $this->page == $num;
     }
 
     public function hasPrevPage()
@@ -46,13 +51,13 @@ class Pager
 
     public function generateURL(string $url, int $num)
     {
-        $queryString = parse_url($url, PHP_URL_QUERY);
+        $queryString = parse_url($url, PHP_URL_QUERY) ?: '';
         parse_str($queryString, $items);
         $items['num'] = $num;
         $newQuerystring = http_build_query($items);
         if (empty($queryString)) {
-            return $url . '&' . $newQuerystring;
+            return $url . '?' . $newQuerystring;
         }
-        return str_replace('&'.$queryString, '&' . $newQuerystring, $url);
+        return preg_replace('@'.preg_quote($queryString).'$@', $newQuerystring, $url);
     }
 }

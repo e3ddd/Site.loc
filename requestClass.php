@@ -82,7 +82,7 @@ class Request
 
     public function server(string $name, $default = null)
     {
-            return $_GET[$name] ?? $default;
+            return $_SERVER[$name] ?? $default;
      }
 
     public function hasSession(string $name): bool

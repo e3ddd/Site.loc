@@ -12,7 +12,7 @@
     <div class="row text-center bg-white shadow-sm">
         <div class="col border rounded p-4">
             ##PRODUCT##
-        </div>
+       </div>
     </div>
 </div>
 </body>

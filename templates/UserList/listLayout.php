@@ -11,13 +11,13 @@
 <body>
 <div class="container-fluid">
     <a href="##HOME##" class="link-dark"><h4>##TITLE##</h4></a>
-    <div class="row-sm">
+    <div class="row">
         ##SEARCH##
     </div>
-    <div class="row-md">
+    <div class="row">
         ##LIST##
     </div>
-    <div class="row-md">
+    <div class="row">
         ##PAGER##
     </div>
 </div>

@@ -80,8 +80,7 @@ class EditOperations extends FileOperations
                 $this->putToFile($newFilePath, $item);
             }
         }
-        return true;
-//        return $this->renameFunc($filePath, $newFilePath);
+        return $this->renameFunc($filePath, $newFilePath);
     }
 }
 

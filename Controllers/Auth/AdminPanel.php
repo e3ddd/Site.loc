@@ -7,7 +7,9 @@ include getRealPath("Pager.php");
 
 $layoutList = file_get_contents("templates/UserList/listLayout.php");
 $listItem = file_get_contents("templates/UserList/listItem.php");
-$pageButtons = file_get_contents("templates/UserList/pageBut.php");
+$deleteBut = file_get_contents("templates/UserList/deleteBut.php");
+$editBut = file_get_contents("templates/UserList/editBut.php");
+$productBut = file_get_contents("templates/ProductsList/productBut.php");
 $pagerItemTemplate = file_get_contents("templates/UserList/pagerItem.php");
 $pagerItemTemplateActive = file_get_contents("templates/UserList/pagerActiveItem.php");
 $pagerTemplate = file_get_contents("templates/UserList/pager.php");
@@ -88,8 +90,6 @@ if(empty($requests->search)) {
     }
 
 
-
-
 $search = (new RenderPage($searchField))
     ->setContent('items', $searchField)
     ->render();
@@ -102,15 +102,47 @@ $pages = (new RenderPage($pagerTemplate))
     )
     ->render();
 
+$products = new FileOperations('r', ["email", "products"]);
+$productList = $products->getFileData("data/products.csv");
 
+//$productsTmp = "";
+//foreach ($products->getFileData("data/products.csv") as $item){
+//    if($requests->email === $item['email']){
+//        $productsTmp = $item['products'];
+//    }
+//}
 
 for ($i = 0; $i < $pager->countPages(); $i++) {
         $pageNum = $i * $pager->limit;
         if ($pageNum != $pager->limitNum()) {
             for ($j = $pager->currentNum(); $j < $pager->limitNum(); $j++) {
+                $edit = (new RenderPage($editBut))
+                    ->setContent("email", $user[$j]['email'])
+                    ->setContent("password", $user[$j]['password'])
+                    ->render();
+                $delete = (new RenderPage($deleteBut))
+                    ->setContent("email", $user[$j]['email'])
+                    ->render();
+                $tmp = "";
+              foreach ($productList as $item){
+                  if($item['email'] == $requests->email){
+                      $tmp = $item['products'];
+                      break;
+                  }
+              }
+
+              $product = (new RenderPage($productBut))
+                  ->setContent("email", $user[$j]['email'])
+                  ->setContent("product", $tmp)
+                  ->render();
+                unset($tmp);
+
                 $item = new RenderPage($listItem);
                 $item->setContent('email', $user[$j]['email'])
-                    ->setContent('password', $user[$j]['password']);
+                    ->setContent('password', $user[$j]['password'])
+                    ->setContent('edit', $edit)
+                    ->setContent('delete', $delete)
+                    ->setContent('product', $product);
                 $items .= $item->render();
                 if ($j == $pager->amountDataItems - 1) {
                     break;
@@ -129,3 +161,4 @@ $list->setContent('title', $title)
     ->setContent('num', $pager->getCurrentPage());
 
 echo $list->render();
+var_dump($_REQUEST);

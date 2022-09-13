@@ -1,4 +1,4 @@
-<form action="index.php?page=Auth/editUserList" method="POST">
+<form action="index.php?page=Auth/edit" method="POST">
     <input type="text" name="email" value="##EMAIL##">
     <input type="hidden" name="password" value="##PASSWORD##">
     <input type="hidden" name="oldEmail" value="##OLDEMAIL##">

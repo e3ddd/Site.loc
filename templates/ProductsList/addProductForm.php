@@ -8,7 +8,15 @@
     </div>
     <div class="row-justify-content-center">
         <label for="inputProduct" class="p-1">Product</label>
-        <input type="product" name="product" class="form-control input-sm" id="inputProduct"  placeholder="Enter needle product">
+        <input type="text" name="product" class="form-control input-sm" id="inputProduct"  placeholder="Enter needle product">
+    </div>
+    <div class="row-justify-content-center">
+        <label for="inputProduct" class="p-1">Price</label>
+        <input type="text" name="price" class="form-control input-sm" id="inputProduct"  placeholder="Enter price">
+    </div>
+    <div class="row-justify-content-center">
+        <label for="inputProduct" class="p-1">Description</label>
+        <input type="text" name="description" class="form-control input-sm" id="inputProduct"  placeholder="Enter description">
     </div>
     <div class="row-justify-content-center p-3">
         <input class="btn btn-primary" type="submit" name="action" value="Add">

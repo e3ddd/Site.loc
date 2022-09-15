@@ -7,9 +7,7 @@ include getRealPath("Pager.php");
 
 $layoutList = file_get_contents("templates/UserList/listLayout.php");
 $listItem = file_get_contents("templates/UserList/listItem.php");
-$deleteBut = file_get_contents("templates/UserList/deleteBut.php");
-$editBut = file_get_contents("templates/UserList/editBut.php");
-$productBut = file_get_contents("templates/ProductsList/productBut.php");
+$actionBut = file_get_contents("templates/UserList/actionButUserList.php");
 $pagerItemTemplate = file_get_contents("templates/UserList/pagerItem.php");
 $pagerItemTemplateActive = file_get_contents("templates/UserList/pagerActiveItem.php");
 $pagerTemplate = file_get_contents("templates/UserList/pager.php");
@@ -21,9 +19,10 @@ $requests = Request::getInstance();
 $requests->setOrder('PGC');
 
 $list = new RenderPage($layoutList);
-$users = new FileOperations("r", $user = ["email", "password"]);
+$users = new FileOperations("r", $user = ["num", "email", "password"]);
 
 $user = $users->getFileData(getRealPath("data/users.csv"));
+$products = new FileOperations('r', ['num', 'email', 'product', 'price', 'description']);
 
 $items = "";
 
@@ -34,6 +33,8 @@ parse_str($URL['query'] , $queryString);
 $pages = [];
 
 $searchEmail = [];
+
+$productsContent = [];
 
 if(!empty($requests->search)){
     foreach ($user as $key => $email){
@@ -61,81 +62,42 @@ if(empty($requests->search)) {
     $user = $searchEmail;
 }
 
-    if ($pager->hasPrevPage()) {
-        $pages[] = (new RenderPage($pagerItemTemplate))
-            ->setContent('URL', $pager->generateURL($requests->server("REQUEST_URI"), $queryString['num'] - 1))
-            ->setContent('TITLE', 'Prev')
-            ->render();
-    }
-
-    for ($i = 0; $i < $pager->countPages(); $i++) {
-        if ($pager->activeItem($i)) {
-            $pages[] = (new RenderPage($pagerItemTemplateActive))
-                ->setContent('URL',  $pager->generateURL($requests->server("REQUEST_URI"), $i))
-                ->setContent('TITLE', $i + 1)
-                ->render();
-        } else {
-            $pages[] = (new RenderPage($pagerItemTemplate))
-                ->setContent('URL',  $pager->generateURL($requests->server("REQUEST_URI"), $i))
-                ->setContent('TITLE', $i + 1)
-                ->render();
-        }
-    }
-
-    if ($pager->hasNextPage()) {
-        $pages[] = (new RenderPage($pagerItemTemplate))
-            ->setContent('URL',  $pager->generateURL($requests->server("REQUEST_URI"),$queryString['num'] + 1))
-            ->setContent('TITLE', 'Next')
-            ->render();
-    }
-
-
 $search = (new RenderPage($searchField))
     ->setContent('items', $searchField)
     ->render();
 
 
-$pages = (new RenderPage($pagerTemplate))
-    ->setContent(
-        'items',
-        implode('', $pages)
-    )
-    ->render();
+$pages = $pager->showPager($pagerTemplate, $pagerItemTemplate,$pagerItemTemplateActive,$requests->server("REQUEST_URI"), $queryString);
 
-$products = new FileOperations('r', ["email", "products"]);
-$productList = $products->getFileData("data/products.csv");
-
-//$productsTmp = "";
-//foreach ($products->getFileData("data/products.csv") as $item){
-//    if($requests->email === $item['email']){
-//        $productsTmp = $item['products'];
-//    }
-//}
 
 for ($i = 0; $i < $pager->countPages(); $i++) {
         $pageNum = $i * $pager->limit;
         if ($pageNum != $pager->limitNum()) {
             for ($j = $pager->currentNum(); $j < $pager->limitNum(); $j++) {
-                $edit = (new RenderPage($editBut))
+                $edit = (new RenderPage($actionBut))
+                    ->setContent('action', "index.php")
+                    ->setContent('method', "POST")
+                    ->setContent('value', "Auth/editUser")
+                    ->setContent('name', "Edit")
                     ->setContent("email", $user[$j]['email'])
-                    ->setContent("password", $user[$j]['password'])
+                    ->setContent('num', $user[$j]['num'])
                     ->render();
-                $delete = (new RenderPage($deleteBut))
+                $delete = (new RenderPage($actionBut))
+                    ->setContent('action', "index.php")
+                    ->setContent('method', "POST")
+                    ->setContent('value', "Auth/deleteUser")
+                    ->setContent('name', "Delete")
                     ->setContent("email", $user[$j]['email'])
+                    ->setContent('num', $user[$j]['num'])
                     ->render();
-                $tmp = "";
-              foreach ($productList as $item){
-                  if($item['email'] == $requests->email){
-                      $tmp = $item['products'];
-                      break;
-                  }
-              }
 
-              $product = (new RenderPage($productBut))
-                  ->setContent("email", $user[$j]['email'])
-                  ->setContent("product", $tmp)
-                  ->render();
-                unset($tmp);
+                $product = (new RenderPage($actionBut))
+                    ->setContent('action', "index.php")
+                    ->setContent('method', "GET")
+                    ->setContent('value', "Auth/ProductList")
+                    ->setContent('name', "Products")
+                    ->setContent("email", $user[$j]['email'])
+                    ->render();
 
                 $item = new RenderPage($listItem);
                 $item->setContent('email', $user[$j]['email'])
@@ -152,7 +114,6 @@ for ($i = 0; $i < $pager->countPages(); $i++) {
         break;
     }
 
-
 $list->setContent('title', $title)
     ->setContent('search', $search)
     ->setContent('list', $items)
@@ -161,4 +122,3 @@ $list->setContent('title', $title)
     ->setContent('num', $pager->getCurrentPage());
 
 echo $list->render();
-var_dump($_REQUEST);

@@ -60,4 +60,45 @@ class Pager
         }
         return preg_replace('@'.preg_quote($queryString).'$@', $newQuerystring, $url);
     }
+
+    public function showPager($pagerTemplate, $pagerItemTemplate, $pagerItemTemplateActive, $requestURI, $queryString): string
+    {
+        $pages = [];
+        if ($this->hasPrevPage()) {
+            $pages[] = (new RenderPage($pagerItemTemplate))
+                ->setContent('URL', $this->generateURL($requestURI, $queryString['num'] - 1))
+                ->setContent('TITLE', 'Prev')
+                ->render();
+        }
+
+        for ($i = 0; $i < $this->countPages(); $i++) {
+            if ($this->activeItem($i)) {
+                $pages[] = (new RenderPage($pagerItemTemplateActive))
+                    ->setContent('URL',  $this->generateURL($requestURI, $i))
+                    ->setContent('TITLE', $i + 1)
+                    ->render();
+            } else {
+                $pages[] = (new RenderPage($pagerItemTemplate))
+                    ->setContent('URL',  $this->generateURL($requestURI, $i))
+                    ->setContent('TITLE', $i + 1)
+                    ->render();
+            }
+        }
+
+        if ($this->hasNextPage()) {
+            $pages[] = (new RenderPage($pagerItemTemplate))
+                ->setContent('URL',  $this->generateURL($requestURI,$queryString['num'] + 1))
+                ->setContent('TITLE', 'Next')
+                ->render();
+        }
+
+
+        $pages = (new RenderPage($pagerTemplate))
+            ->setContent(
+                'items',
+                implode('', $pages)
+            );
+
+        return $pages->render();
+    }
 }

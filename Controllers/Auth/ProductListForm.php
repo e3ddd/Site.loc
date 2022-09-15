@@ -10,4 +10,4 @@ $form = new RenderPage($layoutProd);
 $form->setContent('title', $title)
     ->setContent('product', $productForm);
 
-echo $form ->render();
+echo $form->render();

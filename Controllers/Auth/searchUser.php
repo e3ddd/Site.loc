@@ -7,7 +7,7 @@ $requests = Request::getInstance();
 $requests->setOrder('PGC');
 
 $search =  new FileOperations("r",
-    $user = ['email', 'password']);
+    $user = ['num', 'email', 'password']);
 
 if($search->existItem($requests->email, 'email', getRealPath("data/users.csv"))){
     foreach ($search->existItem($requests->email, 'email', getRealPath("data/users.csv")) as $user){

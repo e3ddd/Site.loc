@@ -1,6 +1,9 @@
-<form action="index.php?page=Auth/edit" method="POST">
-    <input type="text" name="email" value="##EMAIL##">
-    <input type="hidden" name="password" value="##PASSWORD##">
-    <input type="hidden" name="oldEmail" value="##OLDEMAIL##">
+<form action="##ACTION##" method="##METHOD##">
+    <div>
+        <input type="text" name="content" value="##CONTENT##">
+    </div>
+    <input type="hidden" name="additional" value="##ADDITIONAL##">
+    <input type="hidden" name="userEmail" value="##EMAIL##">
+    <input type="hidden" name="userNum" value="##NUM##">
     <input class="btn btn-primary" type="submit" name="action" value="Ok">
 </form>

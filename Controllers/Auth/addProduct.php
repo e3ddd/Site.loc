@@ -6,30 +6,38 @@ $requests = Request::getInstance();
 
 $requests->setOrder('GCP');
 
+$num = mt_rand(1,999);
 
-$getUserEmail = new FileOperations('r', $user = ['email', 'password']);
+$getProductData = new FileOperations("r", $buyer = [$num, $requests->email, $requests->product, $requests->price, $requests->description]);
+$products = $getProductData->getFileData("data/products.csv");
 
-$getProduct = new FileOperations('r', ['email', 'product']);
-$product = $getProduct->getFileData("data/products.csv");
-$addProduct = new EditOperations('a+', ['email', 'product']);
+foreach ($products as $product){
+  if($buyer['num'] === $product['num']){
+      $num = mt_rand(1,999);
+  }
+}
 
-if($getUserEmail->existItem($requests->email, 'email', getRealPath("data/users.csv"))){
-    if($getProduct->existItem($requests->email, 'email', getRealPath("data/products.csv"))){
-        $newProduct = "";
-        foreach ($product as $item){
-            if($item['email'] == $requests->email){
-                $newProduct = $item['product'] . "," . $requests->product;
-            }
-        }
-        $file = $addProduct->openFile("data/newProducts.csv");
-        fclose($file);
-        $addProduct->deleteFileDataItem("data/products.csv" , "data/newProducts.csv" , $requests->email);
-        $addProduct->putToFile("data/products.csv", [$requests->email, $newProduct]);
-        unset($newProduct);
+
+$addProduct = new FileOperations("a+",
+    $product = [$num, $requests->email, $requests->product, $requests->price, $requests->description]);
+
+$getUsersData = new FileOperations("r",
+    ['num', 'email', 'password']);
+
+
+
+if(empty($requests->email) || empty($requests->product) || empty($requests->price || empty($requests->description))){
+    echo "Email or product not entered !";
+}else{
+    if(!$getUsersData->existItem($requests->email, 'email', getRealPath("data/users.csv"))){
+        echo "User doesn't exist!";
     }else{
-        $addProduct->putToFile("data/products.csv", [$requests->email, $requests->product]);
+        $addProduct->putToFile(getRealPath("data/products.csv"), $product);
     }
 }
+
+
+
 
 
 

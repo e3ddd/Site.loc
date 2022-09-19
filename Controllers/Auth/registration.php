@@ -1,31 +1,16 @@
 <?php
 include getRealPath("requestClass.php");
 include getRealPath("FileOperations.php");
+include getRealPath("data/dataBase.php");
+
 
 $requests = Request::getInstance();
-
 $requests->setOrder('GCP');
 
-$num = mt_rand(1,999);
+$db = new DataBase('site.loc', 'dev','dev','dev');
 
-$regUser = new FileOperations("a+",
-    $user = [$num, $requests->email, $requests->password]);
-
-if($num === $regUser->getFileData("data/users.csv")['num']){
-    $num = mt_rand(1,999);
+if(!empty($db->exist('users', 'email', $requests->email)->fetch_all())){
+    echo "Your e-mail exist !";
+}else{
+    $db->db_query("INSERT INTO users (id,email,password) VALUES (0,'$requests->email', '$requests->password')");
 }
-
-$getUsersData = new FileOperations("r",
-    $userID = ['num', 'email', 'password']);
-
-if(empty($requests->email) || empty($requests->password)){
-    echo "Email or password not entered !";
-    }else{
-      if($getUsersData->existItem($requests->email, 'email', getRealPath("data/users.csv"))){
-          echo "Your e-mail exist !";
-      }else{
-          $regUser->putToFile(getRealPath("data/users.csv"), $user);
-      }
-    }
-
-

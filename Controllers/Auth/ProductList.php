@@ -2,10 +2,13 @@
 include getRealPath("View/viewClass.php");
 include getRealPath("requestClass.php");
 include getRealPath("Pager.php");
-include getRealPath("FileOperations.php");
+include getRealPath("data/dataBase.php");
+
 
 $requests = Request::getInstance();
 $requests->setOrder('PGC');
+
+$db = new DataBase('site.loc', 'dev', 'dev', 'dev');
 
 $layoutList = file_get_contents("templates/ProductsList/productListLayout.php");
 $listItem = file_get_contents("templates/ProductsList/productListItem.php");
@@ -20,9 +23,13 @@ $title = "Product List";
 $list = new RenderPage($layoutList);
 $user = $requests->email;
 
-$products = new FileOperations('r', ['num', 'email', 'product', 'price', 'description']);
-$product = $products->getFileData("data/products.csv");
-
+$product = $db->select('*', 'products');
+$num = 0;
+foreach ($product as $item){
+    if($item['user'] === $requests->email){
+        $num++;
+    }
+}
 $items = "";
 
 $URL = parse_url($_SERVER['REQUEST_URI']);
@@ -31,64 +38,58 @@ parse_str($URL['query'] , $queryString);
 
 $pages = [];
 
-$productsContent = [];
-
-foreach ($product as $key => $item){
-    if($item['email'] === $requests->email){
-        $productsContent['num'][] = $item['num'];
-        $productsContent['product'][] = $item['product'];
-        $productsContent['price'][] = $item['price'];
-        $productsContent['description'][] = $item['description'];
-    }
-}
-
 $pager = new Pager(
-    count($productsContent['product']),
+    $num,
     5,
     (int)$queryString['num'] ?? 0
 );
 
 $pages = $pager->showPager($pagerTemplate, $pagerItemTemplate,$pagerItemTemplateActive,$requests->server("REQUEST_URI"), $queryString);
 
+$currentNum = $pager->currentNum();
+
+$prod = $db->db_query("SELECT * FROM products WHERE user = '$requests->email' LIMIT $pager->limit OFFSET $currentNum ");
 
 $item = (new RenderPage($listItem))
-    ->setContent('email', $user);
+    ->setContent('email', $requests->email);
 
 for ($i = 0; $i < $pager->countPages(); $i++) {
     $pageNum = $i * $pager->limit;
     if ($pageNum != $pager->limitNum()) {
-        for ($j = $pager->currentNum(); $j < $pager->limitNum(); $j++) {
-            $edit = (new RenderPage($actionBut))
-                ->setContent('action', "index.php")
-                ->setContent('method', "POST")
-                ->setContent('value', "Auth/editProduct")
-                ->setContent('name', "Edit")
-                ->setContent('num', $productsContent['num'][$j])
-                ->setContent('product', $productsContent['product'][$j])
-                ->setContent('description', $productsContent['description'][$j])
-                ->render();
+        foreach ($prod as $key => $product){
+            if($requests->email === $product['user']){
+                $edit = (new RenderPage($actionBut))
+                    ->setContent('action', "index.php")
+                    ->setContent('method', "POST")
+                    ->setContent('value', "Auth/editProduct")
+                    ->setContent('name', "Edit")
+                    ->setContent('num', $product['id'])
+                    ->setContent('price', $product['price'])
+                    ->setContent('product', $product['name'])
+                    ->setContent('description', $product['description'])
+                    ->render();
 
-            $delete = (new RenderPage($actionBut))
-                ->setContent('action', "index.php")
-                ->setContent('method', "POST")
-                ->setContent('value', "Auth/deleteProduct")
-                ->setContent('name', "Delete")
-                ->setContent("num",$productsContent['num'][$j])
-                ->render();
+                $delete = (new RenderPage($actionBut))
+                    ->setContent('action', "index.php")
+                    ->setContent('method', "POST")
+                    ->setContent('value', "Auth/deleteProduct")
+                    ->setContent('name', "Delete")
+                    ->setContent("num",$product['id'])
+                    ->render();
 
-            $itemContent = (new RenderPage($productItem))
-            ->setContent('product', $productsContent['product'][$j])
-                ->setContent('price', $productsContent['price'][$j])
-                ->setContent('description', $productsContent['description'][$j])
-                ->setContent('edit', $edit)
-                ->setContent('delete', $delete);
-            $items .= $itemContent->render();
-            if ($j == $pager->amountDataItems - 1) {
-                break;
+                $itemContent = (new RenderPage($productItem))
+                    ->setContent('product',  $product['name'])
+                    ->setContent('price',  $product['price'])
+                    ->setContent('description', $product['description'])
+                    ->setContent('edit', $edit)
+                    ->setContent('delete', $delete);
+                $items .= $itemContent->render();
+                if ($key == $pager->amountDataItems - 1) {
+                    break;
+                }
+                }
             }
         }
-    }
-    break;
 }
 
 $productListItem = (new RenderPage($listItem))

@@ -5,6 +5,5 @@
     </div>
     <div><textarea  style="margin-top: 10px; width: 21%" rows="10" name="description">##DESCRIPTION##</textarea></div>
     <input type="hidden" name="productNum" value="##NUM##">
-    <input type="hidden" name="email" value="##EMAIL##">
     <input class="btn btn-primary" type="submit" name="action" value="Ok">
 </form>

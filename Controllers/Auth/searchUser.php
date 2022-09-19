@@ -1,19 +1,21 @@
 <?php
 include getRealPath("requestClass.php");
 include getRealPath("FileOperations.php");
+include getRealPath("data/dataBase.php");
 
 $requests = Request::getInstance();
 
 $requests->setOrder('PGC');
 
-$search =  new FileOperations("r",
-    $user = ['num', 'email', 'password']);
+$db = new DataBase('site.loc', 'dev','dev','dev');
 
-if($search->existItem($requests->email, 'email', getRealPath("data/users.csv"))){
-    foreach ($search->existItem($requests->email, 'email', getRealPath("data/users.csv")) as $user){
-        echo $user . "<br>";
-    }
-}else{
-    echo "User didn't found !";
+
+if(!empty($db->exist('users', 'email', $requests->email)->fetch_all())){
+    $data = $db->db_query("SELECT email,password FROM users WHERE email = '$requests->email' ");
+     foreach ($data->fetch_row() as $item){
+         echo $item . "<br>";
+     }
+}else
+{
+ echo "Your user didn't found !";
 }
-

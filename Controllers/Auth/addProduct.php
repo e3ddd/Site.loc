@@ -14,7 +14,21 @@ if(empty($requests->email) || empty($requests->product) || empty($requests->pric
     if(!$db->exist('users', 'email', $requests->email)->fetch_all()){
         echo "User doesn't exist!";
     }else{
-        $db->db_query("INSERT INTO products (id,user,name,price,description) VALUES (0,'$requests->email', '$requests->product', '$requests->price', '$requests->description')");
+        $users = $db->select('*', 'users');
+        $id = "";
+        foreach ($users as $user){
+            if($requests->email === $user['email']){
+                $id = $user['id'];
+                break;
+            }
+        }
+        $img = "";
+        foreach (scandir(getRealPath("assets/productImg")) as $image){
+           if(preg_match("@^$id\_$requests->product.\w{3}@", $image, $matches)){
+               $img = $image;
+            }
+        }
+        $db->db_query("INSERT INTO products (id,user_id,name,price,description,img_name) VALUES (0,'$id', '$requests->product', '$requests->price', '$requests->description','$img')");
     }
 }
 

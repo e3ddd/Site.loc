@@ -25,6 +25,16 @@
                     <input class="btn btn-primary" type="submit" name="action" value="Add Product">
                 </form>
             </div>
+              <div class="col border rounded p-4">
+                <form action="index.php?page=Auth/UserLogin" method="POST">
+                    <input class="btn btn-primary" type="submit" name="action" value="User Personal Area">
+                </form>
+            </div>
+        <div class="col border rounded p-4">
+            <form action="index.php?page=Auth/usersProductList" method="POST">
+                <input class="btn btn-primary" type="submit" name="action" value="Users Products">
+            </form>
+        </div>
         </div>
 </div>
 </body>

@@ -26,7 +26,7 @@ $user = $requests->email;
 $product = $db->select('*', 'products');
 $num = 0;
 foreach ($product as $item){
-    if($item['user'] === $requests->email){
+    if($item['user_id'] === $requests->num){
         $num++;
     }
 }
@@ -36,10 +36,8 @@ $URL = parse_url($_SERVER['REQUEST_URI']);
 
 parse_str($URL['query'] , $queryString);
 
-$pages = [];
-
 $pager = new Pager(
-    $num,
+        $num,
     5,
     (int)$queryString['num'] ?? 0
 );
@@ -48,7 +46,9 @@ $pages = $pager->showPager($pagerTemplate, $pagerItemTemplate,$pagerItemTemplate
 
 $currentNum = $pager->currentNum();
 
-$prod = $db->db_query("SELECT * FROM products WHERE user = '$requests->email' LIMIT $pager->limit OFFSET $currentNum ");
+if($db->exist('products', 'user_id' , $requests->num)->num_rows !== 0){
+    $prod = $db->db_query("SELECT * FROM products WHERE user_id = '$requests->num' LIMIT $pager->limit OFFSET $currentNum ");
+}
 
 $item = (new RenderPage($listItem))
     ->setContent('email', $requests->email);
@@ -57,7 +57,7 @@ for ($i = 0; $i < $pager->countPages(); $i++) {
     $pageNum = $i * $pager->limit;
     if ($pageNum != $pager->limitNum()) {
         foreach ($prod as $key => $product){
-            if($requests->email === $product['user']){
+            if($requests->num === $product['user_id']){
                 $edit = (new RenderPage($actionBut))
                     ->setContent('action', "index.php")
                     ->setContent('method', "POST")

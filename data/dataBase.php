@@ -25,7 +25,7 @@ class DataBase
     public function exist($table_name, $column, $needle)
     {
        return $this->connection->query("SELECT * FROM $table_name
-       WHERE EXISTS(SELECT $column FROM $table_name WHERE $column = '$needle')
+       WHERE $column = '$needle'
        ");
     }
 
@@ -43,17 +43,19 @@ class DataBase
         return $items;
     }
 
-    public function update($table_name, $column, $value, $num)
+    public function update($table_name, $column, $value, $id)
     {
-       return $this->connection->query("UPDATE $table_name
-        SET $column = '$value'
-        WHERE id = $num
+        $stmt = $this->connection->prepare("UPDATE $table_name
+        SET $column = ?
+        WHERE id = ?
         ");
+        $stmt->bind_param('si', $value, $id);
+       return $stmt->execute();
     }
 
-    public function delete($table_name, $num)
+    public function delete($table_name, $id)
     {
-        return $this->connection->query("DELETE FROM $table_name WHERE id = $num");
+        return $this->connection->query("DELETE FROM `$table_name` WHERE id = $id");
     }
 
     public function db_query($query): mysqli_result|bool

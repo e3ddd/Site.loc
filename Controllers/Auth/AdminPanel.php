@@ -1,6 +1,5 @@
 <?php
 include getRealPath("View/viewClass.php");
-include getRealPath("FileOperations.php");
 include getRealPath("requestClass.php");
 include getRealPath("Pager.php");
 include getRealPath("data/dataBase.php");
@@ -22,24 +21,15 @@ $list = new RenderPage($layoutList);
 
 $db = new DataBase('site.loc', 'dev','dev','dev');
 
-$users = new FileOperations("r", $user = ["num", "email", "password"]);
-
 $user = $db->select('*', 'users');
 
-$products = new FileOperations('r', ['num', 'email', 'product', 'price', 'description']);
-
 $items = "";
-
 
 $URL = parse_url($_SERVER['REQUEST_URI']);
 
 parse_str($URL['query'] , $queryString);
 
-$pages = [];
-
 $searchEmail = [];
-
-$productsContent = [];
 
 if(!empty($requests->search)){
     foreach ($user as $key => $email){
@@ -104,6 +94,7 @@ for ($i = 0; $i < $pager->countPages(); $i++) {
                 ->setContent('value', "Auth/ProductList")
                 ->setContent('name', "Products")
                 ->setContent("email", $user['email'])
+                ->setContent("num", $user['id'])
                 ->render();
 
             $item = new RenderPage($listItem);

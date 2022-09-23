@@ -1,7 +1,7 @@
 <div class="col-md-3 shadow-sm">
         <p></p>
-            <img src="##IMAGE##" class="p-1" alt="Lights">
-            <div class="caption">
+    <div class="">##IMAGES##</div>
+            <div class="p-2">
                 <p><b>User: ##USER##</b></p>
                 <p><b>##NAME##</b></p>
                 <p><b>Price: ##PRICE##$</b></p>

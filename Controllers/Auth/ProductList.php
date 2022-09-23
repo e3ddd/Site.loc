@@ -8,7 +8,13 @@ include getRealPath("data/dataBase.php");
 $requests = Request::getInstance();
 $requests->setOrder('PGC');
 
-$db = new DataBase('site.loc', 'dev', 'dev', 'dev');
+$servername = "site.loc";
+$username = "dev";
+$password = "dev";
+$dbname = "dev";
+
+
+$db = new DataBase("mysql:host=$servername;dbname=$dbname", $username, $password);
 
 $layoutList = file_get_contents("templates/ProductsList/productListLayout.php");
 $listItem = file_get_contents("templates/ProductsList/productListItem.php");
@@ -23,7 +29,7 @@ $title = "Product List";
 $list = new RenderPage($layoutList);
 $user = $requests->email;
 
-$product = $db->select('*', 'products');
+$product = $db->query("SELECT * FROM products");
 $num = 0;
 foreach ($product as $item){
     if($item['user_id'] === $requests->num){
@@ -46,8 +52,8 @@ $pages = $pager->showPager($pagerTemplate, $pagerItemTemplate,$pagerItemTemplate
 
 $currentNum = $pager->currentNum();
 
-if($db->exist('products', 'user_id' , $requests->num)->num_rows !== 0){
-    $prod = $db->db_query("SELECT * FROM products WHERE user_id = '$requests->num' LIMIT $pager->limit OFFSET $currentNum ");
+if(!empty($db->query("SELECT user_id FROM products WHERE user_id = ?", $requests->num))){
+    $prod = $db->query("SELECT * FROM products WHERE user_id = '$requests->num' LIMIT $pager->limit OFFSET $currentNum ");
 }
 
 $item = (new RenderPage($listItem))

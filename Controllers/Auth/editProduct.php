@@ -3,15 +3,20 @@ include getRealPath("View/viewClass.php");
 include getRealPath("requestClass.php");
 include getRealPath("data/dataBase.php");
 
-$db = new DataBase('site.loc', 'dev', 'dev', 'dev');
+$servername = "site.loc";
+$username = "dev";
+$password = "dev";
+$dbname = "dev";
 
-$product = $db->select('*', 'products');
+
+$db = new DataBase("mysql:host=$servername;dbname=$dbname", $username, $password);
+
+$products = $db->query("SELECT * FROM products");
 
 $editItem = file_get_contents("templates/ProductsList/editItemProduct.php");
 
 $requests = Request::getInstance();
 $requests->setOrder('PGC');
-
 $newProduct = new RenderPage($editItem);
 $newProduct
     ->setContent('product', $requests->product)
@@ -24,9 +29,18 @@ echo $newProduct->render();
 
 
 if($requests->action == "Ok"){
-        $db->update('products', 'name', $requests->product, $requests->productNum);
-        $db->update('products', 'price', $requests->price, $requests->productNum);
-        $db->update('products', 'description', $requests->description, $requests->productNum);
+    $user_id = "";
+    foreach ($products as $product) {
+        if ($product['id'] == $requests->productNum) {
+            $user_id = $product['user_id'];
+        }
+    }
+    $id = $requests->productNum;
+    $name = $requests->product;
+    $price = $requests->price;
+    $description = $requests->description;
+;
+   $db->query("UPDATE products SET id = ?, user_id = ?, name = ?, price = ?, description = ? WHERE id = ?", $id, $user_id,$name, $price, $description, $id);
 }
 
 

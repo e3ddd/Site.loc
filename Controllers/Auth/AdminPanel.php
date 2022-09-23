@@ -14,14 +14,20 @@ $searchField = file_get_contents("templates/UserList/searchField.php");
 $homeLink = "index.php?page=Auth/AdminPanel";
 $title = "Admin Panel";
 
+$servername = "site.loc";
+$username = "dev";
+$password = "dev";
+$dbname = "dev";
+
+
 $requests = Request::getInstance();
 $requests->setOrder('PGC');
 
 $list = new RenderPage($layoutList);
 
-$db = new DataBase('site.loc', 'dev','dev','dev');
+$db = new DataBase("mysql:host=$servername;dbname=$dbname", $username, $password);
 
-$user = $db->select('*', 'users');
+$user = $db->query("SELECT * FROM users");
 
 $items = "";
 
@@ -44,7 +50,7 @@ if(!empty($requests->search)){
 
 if(empty($requests->search)) {
     $pager = new Pager(
-        count($db->select('email', 'users')),
+        count($user),
         10,
         (int)$queryString['num'] ?? 0
     );
@@ -65,7 +71,7 @@ $pages = $pager->showPager($pagerTemplate, $pagerItemTemplate,$pagerItemTemplate
 
 $currentNum = $pager->currentNum();
 
-$users = $db->db_query("SELECT * FROM users LIMIT $pager->limit OFFSET $currentNum");
+$users = $db->query("SELECT * FROM users LIMIT $pager->limit OFFSET $currentNum");
 
 for ($i = 0; $i < $pager->countPages(); $i++) {
     $pageNum = $i * $pager->limit;

@@ -1,21 +1,30 @@
 <?php
 include getRealPath("requestClass.php");
-include getRealPath("FileOperations.php");
 include getRealPath("data/dataBase.php");
 
+$servername = "site.loc";
+$username = "dev";
+$password = "dev";
+$dbname = "dev";
+
+
 $requests = Request::getInstance();
+$requests->setOrder('GCP');
 
-$requests->setOrder('PGC');
+$db = new DataBase("mysql:host=$servername;dbname=$dbname", $username, $password);
+$id = 0;
+$email = $requests->email;
 
-$db = new DataBase('site.loc', 'dev','dev','dev');
+$users = $db->query("SELECT email,password FROM users WHERE email = ?", $email);
 
-
-if(!empty($db->exist('users', 'email', $requests->email)->fetch_all())){
-    $data = $db->db_query("SELECT email,password FROM users WHERE email = '$requests->email' ");
-     foreach ($data->fetch_row() as $item){
-         echo $item . "<br>";
-     }
-}else
-{
- echo "Your user didn't found !";
+if($users){
+    foreach ($users as $user){
+       echo $user['email'] . "<br>";
+       echo $user['password'] . "<br>";
+    }
+}else{
+    echo "Your e-mail don't found !";
 }
+
+
+

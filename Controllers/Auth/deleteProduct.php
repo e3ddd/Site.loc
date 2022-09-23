@@ -3,12 +3,16 @@ include getRealPath("View/viewClass.php");
 include getRealPath("requestClass.php");
 include getRealPath("data/dataBase.php");
 
-$db = new DataBase('site.loc', 'dev', 'dev', 'dev');
+$servername = "site.loc";
+$username = "dev";
+$password = "dev";
+$dbname = "dev";
 
+
+$db = new DataBase("mysql:host=$servername;dbname=$dbname", $username, $password);
 
 $requests = Request::getInstance();
 $requests->setOrder('PGC');
 
-$db = new DataBase('site.loc', 'dev','dev','dev');
 
-$db->delete('products', $requests->num);
+$db->query("DELETE FROM products WHERE id = ?", $requests->num);

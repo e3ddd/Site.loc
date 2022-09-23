@@ -1,18 +1,30 @@
 <?php
 
-include 'data/dataBase.php';
-$test = new DataBase('site.loc', 'dev','dev','dev');
+$servername = "site.loc";
+$username = "dev";
+$password = "dev";
+$dbname = "dev";
 
-//var_dump($query = $test->selectAll("users"));
+try {
+    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+    // set the PDO error mode to exception
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-//$select = $test->db_operation("SELECT DISTINCT email FROM users WHERE email LIKE 'a%'");
-//
-//$email = [];
-//
-//for ($i=0;$i<$select->num_rows;$i++){
-//    $email[$i] = $select->fetch_assoc();
-//}
+    // prepare sql and bind parameters
+    $stmt = $conn->prepare("INSERT INTO users (id, email, password)
+  VALUES (:id, :email, :password)");
+    $stmt->bindParam(':id', $id);
+    $stmt->bindParam(':email', $email);
+    $stmt->bindParam(':password', $password);
 
-var_dump($test->db_query("SELECT * FROM users
-       WHERE EXISTS(SELECT 'email' FROM users WHERE email = 'zakazaka02@gmail.com')
-       "));
+    // insert a row
+    $id = 0;
+    $email = "john@example.com";
+    $password = "123";
+    $stmt->execute();
+
+
+    echo "New records created successfully";
+} catch(PDOException $e) {
+    echo "Error: " . $e->getMessage();
+}

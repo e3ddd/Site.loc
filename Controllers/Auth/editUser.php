@@ -6,37 +6,43 @@ include getRealPath("data/dataBase.php");
 $editItem = file_get_contents("templates/UserList/editItem.php");
 
 $requests = Request::getInstance();
-
 $requests->setOrder('PGC');
 
-$db = new DataBase('site.loc', 'dev','dev','dev');
+$servername = "site.loc";
+$username = "dev";
+$password = "dev";
+$dbname = "dev";
 
-$users = $db->select('*', 'users');
+
+$db = new DataBase("mysql:host=$servername;dbname=$dbname", $username, $password);
+
+$users = $db->query("SELECT * FROM users");
 $password = "";
-
-
-foreach ($users as $user){
-    if($user['email'] === $requests->email){
+foreach ($users as $user) {
+    if ($user['email'] === $requests->email) {
         $password = $user['password'];
     }
-}
+    $newUser = new RenderPage($editItem);
+    $newUser->setContent('content', $requests->email)
+        ->setContent('additional', $password)
+        ->setContent('num', $requests->num)
+        ->setContent('email', $requests->email)
+        ->setContent('method', 'POST')
+        ->setContent('action', "index.php?page=Auth/editUser");
+    echo $newUser->render();
 
-$newUser = new RenderPage($editItem);
-$newUser->setContent('content', $requests->email)
-    ->setContent('additional', $password)
-    ->setContent('num', $requests->num)
-    ->setContent('email', $requests->email)
-    ->setContent('method', 'POST')
-    ->setContent('action', "index.php?page=Auth/editUser");
-echo $newUser->render();
 
-    if($requests->action == "Ok"){
-        if(empty($db->exist('users', 'email', $requests->content)->fetch_all())){
-            $db->update('users', 'email', $requests->content, $requests->userNum);
-        }else{
-            echo "E-mail exist !";
+    if ($requests->action == "Ok") {
+        $email = $requests->content;
+        $password = $requests->additional;
+        $oldEmail = $requests->userEmail;
+        foreach ($users as $user) {
+            if ($user['email'] !== $requests->content) {
+                $db->query("UPDATE users SET email = ?, password = ? WHERE email = ?", $email, $password, $oldEmail);
+            }
         }
     }
+}
 
 
 

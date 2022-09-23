@@ -5,6 +5,11 @@ include getRealPath("data/dataBase.php");
 $requests = Request::getInstance();
 $requests->setOrder('PGC');
 
-$db = new DataBase('site.loc', 'dev','dev','dev');
+$servername = "site.loc";
+$username = "dev";
+$password = "dev";
+$dbname = "dev";
 
-$db->delete('users', $requests->num);
+$db = new DataBase("mysql:host=$servername;dbname=$dbname", $username, $password);
+
+$db->query("DELETE FROM users WHERE id = ?", $requests->num);

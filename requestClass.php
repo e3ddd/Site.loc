@@ -104,4 +104,14 @@ class Request
     {
             return $_COOKIE[$name] ?? $default;
     }
+
+    public function files(string $name, $default = null)
+    {
+        return $_FILES[$name] ?? $default;
+    }
+
+    public function hasFiles(string $name): bool
+    {
+        return isset($_FILES[$name]);
+    }
 }

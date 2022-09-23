@@ -48,7 +48,7 @@ $pages = [];
 
 $pager = new Pager(
     $num,
-    9,
+    3,
     (int)$queryString['num'] ?? 0
 );
 
@@ -65,6 +65,7 @@ for ($i = 0; $i < $pager->countPages(); $i++) {
         foreach ($userProducts as $key => $product){
             $item = new RenderPage($listItem);
             $item->setContent('image',"/assets/productImg/" . $product['img_name'])
+                ->setContent('user', $email)
                 ->setContent('name', ucfirst($product['name']))
                 ->setContent('price', $product['price'])
                 ->setContent('description', $product['description']);
@@ -74,6 +75,7 @@ for ($i = 0; $i < $pager->countPages(); $i++) {
             }
         }
     }
+    break;
 }
 
 $list->setContent('product', $items)

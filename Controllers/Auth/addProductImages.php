@@ -21,7 +21,7 @@ $userId = $db->query("SELECT id FROM users WHERE email = ?", $requests->email);
 if($db->query("SELECT id FROM products WHERE id = ?", $productId)){
     $hash_id = hash('md5', $requests->files('fileToUpload')['name']);
     $defaultImg = $userId[0]['id'] . "_" . $productId . "_" . $hash_id;
-    $smallImg = $userId[0]['id'] . "_" . $productId . "_" . "SMALL" . "_" . $hash_id;
+    $smallImg = $userId[0]['id'] . "_" . $productId . "_SMALL_" . $hash_id;
     if($db->query("SELECT hash_id FROM productImages WHERE hash_id = ?", $hash_id)){
         echo "Photo exist !";
     }else{

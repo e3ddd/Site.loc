@@ -6,10 +6,10 @@ include getRealPath("Pager.php");
 include getRealPath("requestClass.php");
 include getRealPath("data/dataBase.php");
 
-$layoutList = file_get_contents("templates/UserPersonalArea/userProductsLayout.php");
-$listItem = file_get_contents("templates/UserPersonalArea/userProductsItem.php");
-$imgLayout = file_get_contents("templates/UserPersonalArea/imagesCollection.php");
-$smallItem = file_get_contents("templates/UserPersonalArea/smallImg.php");
+$layoutList = file_get_contents("templates/UserProducts/userProductsLayout.php");
+$listItem = file_get_contents("templates/UserProducts/userProductsItem.php");
+$imgLayout = file_get_contents("templates/UserProducts/imagesCollection.php");
+$smallItem = file_get_contents("templates/UserProducts/smallImg.php");
 
 $pagerItemTemplate = file_get_contents("templates/UserList/pagerItem.php");
 $pagerItemTemplateActive = file_get_contents("templates/UserList/pagerActiveItem.php");
@@ -30,6 +30,8 @@ $items = "";
 $requests = Request::getInstance();
 $requests->setOrder('PGC');
 
+$currentHour = date('G');
+$currentMin = date('i');
 
 $url = parse_url($_SERVER['REQUEST_URI']);
 
@@ -60,33 +62,39 @@ for ($i = 0; $i < $pager->countPages(); $i++) {
             $userId = $product['user_id'];
             $user = $db->query("SELECT email FROM users WHERE id = ?", $product['user_id']);
             $item = new RenderPage($listItem);
-            $smallImgs = '';
+            $smallImages = "";
+            $imgitem = new RenderPage($imgLayout);
             foreach ($images as $key => $image){
-                   if($product['id'] == $image['product_id']){
-                       $defaultImgLink = $image['user_id'] . "_" . $image['product_id'] . "_" . $image['hash_id'];
-                       $smallImgLink = $image['user_id'] . "_" . $image['product_id'] . "_" . "SMALL" . "_" . $image['hash_id'];
+                if($product['id'] == $image['product_id']){
+                    $defaultImgLink = $image['user_id'] . "_" . $image['product_id'] . "_" . $image['hash_id'];
+                    $smallImgLink = $image['user_id'] . "_" . $image['product_id'] . "_" . "SMALL" . "_" . $image['hash_id'];
 
-                       if (!isset($imgitem)) {
-                           $imgitem = new RenderPage($imgLayout);
-                           $imgitem->setContent('link', "assets/processedProductImg/" . $defaultImgLink)
+                    $imgitem->setContent('link', "assets/processedProductImg/" . $defaultImgLink)
                                ->setContent('image', "assets/processedProductImg/" . $defaultImgLink);
-                       }
 
-                       $smallImg = new RenderPage($smallItem);
-
-                           $smallImg->setContent('link', "assets/processedProductImg/" . $defaultImgLink)
+                    $smallImg = new RenderPage($smallItem);
+                    $smallImg->setContent('link', "assets/processedProductImg/" . $defaultImgLink)
                                ->setContent('image', "assets/processedProductImg/" . $smallImgLink);
-                           $smallImgs .= $smallImg->render();
-                   }
+                    $smallImages .= $smallImg->render();
+                }
             }
 
-            $img = $imgitem->setContent('smallImages', $smallImgs)->render();
+            $img = $imgitem->setContent('smallImages', $smallImages)->render();
+            unset($imgitem);
 
-                unset($imgitem);
 
-                $item->setContent('images', $img);
+            $item->setContent('images', $img);
 
+            $viewProductDate = $db->query("SELECT count FROM viewCounter WHERE hour = ? AND minute = ? AND product_id = ?", $currentHour, $currentMin, $product['id']);
+            if($viewProductDate[0][0] == null){
+                $item->setContent('views', 0);
+            }else{
+                $item->setContent('views', $viewProductDate[0][0]);
+            }
             $item
+                ->setContent('action', "index.php?page=Auth/viewCounter")
+                ->setContent('method', "post")
+                ->setContent('id', $product['id'])
                 ->setContent('name', ucfirst($product['name']))
                 ->setContent('user', $user[0]['email'])
                 ->setContent('price', $product['price'])
@@ -99,7 +107,9 @@ for ($i = 0; $i < $pager->countPages(); $i++) {
 
 
 
-$list->setContent('product', $items)
+$list
+    ->setContent('title', 'Product List')
+    ->setContent('product', $items)
     ->setContent('pager', $pages)
     ->setContent('num', $pager->getCurrentPage());
 

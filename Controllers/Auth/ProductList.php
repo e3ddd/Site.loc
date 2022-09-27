@@ -18,6 +18,8 @@ $db = new DataBase("mysql:host=$servername;dbname=$dbname", $username, $password
 
 $layoutList = file_get_contents("templates/ProductsList/productListLayout.php");
 $listItem = file_get_contents("templates/ProductsList/productListItem.php");
+$imageList = file_get_contents("templates/ProductsList/imagesList.php");
+$imageInput = file_get_contents("templates/ProductsList/imgsinput.php");
 $productItem = file_get_contents("templates/ProductsList/productItem.php");
 $actionBut = file_get_contents("templates/ProductsList/actionButProductsList.php");
 $pagerItemTemplate = file_get_contents("templates/UserList/pagerItem.php");
@@ -30,6 +32,7 @@ $list = new RenderPage($layoutList);
 $user = $requests->email;
 
 $product = $db->query("SELECT * FROM products");
+$images = $db->query("SELECT * FROM productImages");
 $num = 0;
 foreach ($product as $item){
     if($item['user_id'] === $requests->num){
@@ -59,11 +62,22 @@ if(!empty($db->query("SELECT user_id FROM products WHERE user_id = ?", $requests
 $item = (new RenderPage($listItem))
     ->setContent('email', $requests->email);
 
+
 for ($i = 0; $i < $pager->countPages(); $i++) {
     $pageNum = $i * $pager->limit;
     if ($pageNum != $pager->limitNum()) {
         foreach ($prod as $key => $product){
             if($requests->num === $product['user_id']){
+                $img = "";
+                $imgId = [];
+                $delete = new RenderPage($actionBut);
+                foreach ($images as $image) {
+                    if ($product['id'] == $image['product_id']){
+                        $imgId[] = $image['id'];
+                    }
+                    $img = implode(',', $imgId);
+                }
+
                 $edit = (new RenderPage($actionBut))
                     ->setContent('action', "index.php")
                     ->setContent('method', "POST")
@@ -73,22 +87,24 @@ for ($i = 0; $i < $pager->countPages(); $i++) {
                     ->setContent('price', $product['price'])
                     ->setContent('product', $product['name'])
                     ->setContent('description', $product['description'])
+                    ->setContent('images', $img)
                     ->render();
 
-                $delete = (new RenderPage($actionBut))
-                    ->setContent('action', "index.php")
+                $delete->setContent('action', "index.php")
                     ->setContent('method', "POST")
                     ->setContent('value', "Auth/deleteProduct")
                     ->setContent('name', "Delete")
-                    ->setContent("num",$product['id'])
-                    ->render();
+                    ->setContent("num",$product['id']);
+
+                $del = $delete->render();
 
                 $itemContent = (new RenderPage($productItem))
                     ->setContent('product',  $product['name'])
                     ->setContent('price',  $product['price'])
                     ->setContent('description', $product['description'])
                     ->setContent('edit', $edit)
-                    ->setContent('delete', $delete);
+                    ->setContent('delete', $del);
+
                 $items .= $itemContent->render();
                 if ($key == $pager->amountDataItems - 1) {
                     break;

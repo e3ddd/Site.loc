@@ -28,11 +28,11 @@ foreach ($users as $user) {
         ->setContent('num', $requests->num)
         ->setContent('email', $requests->email)
         ->setContent('method', 'POST')
-        ->setContent('action', "index.php?page=Auth/editUser");
-    echo $newUser->render();
+        ->setContent('action', "index.php?page=Auth/editUser");;
+}
+echo $newUser->render();
 
-
-    if ($requests->action == "Ok") {
+if ($requests->action == "Ok") {
         $email = $requests->content;
         $password = $requests->additional;
         $oldEmail = $requests->userEmail;
@@ -42,7 +42,7 @@ foreach ($users as $user) {
             }
         }
     }
-}
+
 
 
 

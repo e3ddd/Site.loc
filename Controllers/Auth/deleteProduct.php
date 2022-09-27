@@ -14,5 +14,5 @@ $db = new DataBase("mysql:host=$servername;dbname=$dbname", $username, $password
 $requests = Request::getInstance();
 $requests->setOrder('PGC');
 
+    $db->query("DELETE FROM products WHERE id = ?", $requests->num);
 
-$db->query("DELETE FROM products WHERE id = ?", $requests->num);

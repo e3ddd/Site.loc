@@ -5,4 +5,5 @@
     <input type="hidden" name="price" value="##PRICE##">
     <input type="hidden" name="product" value="##PRODUCT##">
     <input type="hidden" name="description" value="##DESCRIPTION##">
+    <input type="hidden" name="image" value="##IMAGES##">
 </form>

@@ -16,29 +16,28 @@ $dbname = "dev";
 $db = new DataBase("mysql:host=$servername;dbname=$dbname", $username, $password);
 
 $productViewCountSum = $db->query("SELECT SUM(count) FROM viewCounter WHERE product_id = ? GROUP BY hour", $prodId);
-$viewHours = $db->query("SELECT DISTINCT hour FROM viewCounter WHERE product_id = ?", $prodId);
-//var_dump($viewHours);
-//var_dump($productViewCountSum);
+$viewHours = $db->query("SELECT DISTINCT hour,date FROM viewCounter WHERE product_id = ?", $prodId);
+
+
 $statisticLayout = file_get_contents('templates/ProductStatisticTable/productStatisticLayout.php');
 $tableLayout = file_get_contents('templates/ProductStatisticTable/tableLayout.php');
 $statisticHours = file_get_contents('templates/ProductStatisticTable/hours.php');
+$statisticNumbers = file_get_contents('templates/ProductStatisticTable/numbers.php');
+$statisticDate = file_get_contents('templates/ProductStatisticTable/date.php');
 
 $statisticTable = new RenderPage($statisticLayout);
 $statisticTableLayout = new RenderPage($tableLayout);
+$statisticNum = new RenderPage($statisticNumbers);
 $hour = "";
-
+$nums = "";
 $hours = [];
 
 for ($i=1;$i<25;$i++){
     $hours[] = $i;
 }
-foreach ($viewHours as $hour){
-    foreach ($hours as $num){
-        if($num == $hour['hour']){
 
-        }
-    }
-}
+
+
 foreach ($hours as $key => $num){
     $statisticHour = new RenderPage($statisticHours);
     $hour .= $statisticHour->setContent('hour', $num)->render();
@@ -46,7 +45,8 @@ foreach ($hours as $key => $num){
 
 
 
-$statisticTableLayout->setContent('hours', $hour);
+$statisticTableLayout->setContent('hours', $hour)
+    ->setContent('numbers', $nums);
 $table = $statisticTableLayout->render();
 
 

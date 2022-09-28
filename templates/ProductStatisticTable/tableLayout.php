@@ -8,5 +8,6 @@
 </div>
 <div class="row">
     ##DATE##
+    <div class="col"></div>
     ##NUMBERS##
 </div>

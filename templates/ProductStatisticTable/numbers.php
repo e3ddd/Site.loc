@@ -1,1 +1,1 @@
-<div class="col">##NUMBER##</div>
+<div class="col border-top border-dark">##NUMBER##</div>

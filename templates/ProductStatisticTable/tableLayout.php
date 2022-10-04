@@ -1,13 +1,7 @@
-<div class="row">
- <div class="col"></div>
-    <div class="col">Hour</div>
+<div class="row p-1">
+ <div class="col-sm"></div>
+    <div class="col-sm">Hours</div>
     ##HOURS##
 </div>
-<div class="row">
-    <div class="col">Date</div>
-</div>
-<div class="row">
-    ##DATE##
-    <div class="col"></div>
-    ##NUMBERS##
-</div>
+<div class="row m-3">Date</div>
+##STATISTICROW##

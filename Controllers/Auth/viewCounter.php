@@ -44,7 +44,7 @@ foreach ($products as $key => $product){
     foreach ($images as $key => $image){
         if($product['id'] == $image['product_id']){
             $defaultImgLink = $image['user_id'] . "_" . $image['product_id'] . "_" . $image['hash_id'];
-            $smallImgLink = $image['user_id'] . "_" . $image['product_id'] . "_" . "SMALL" . "_" . $image['hash_id'];
+            $smallImgLink = $image['user_id'] . "_" . $image['product_id'] . "_SMALL_" . $image['hash_id'];
 
             $imgitem->setContent('link', "assets/processedProductImg/" . $defaultImgLink)
                 ->setContent('image', "assets/processedProductImg/" . $defaultImgLink);
@@ -91,7 +91,7 @@ if(empty($viewProductId)){
         foreach ($viewCounter as $item){
             $count = $item['count'];
             $count++;
-            $db->query("UPDATE viewCounter SET count = ? WHERE date = ? AND product_id = ?", $count,$currentDate,$prodId);
+            $db->query("UPDATE viewCounter SET count = ? WHERE minute = ? AND product_id = ?", $count,$currentMin,$prodId);
         }
     }else{
         $db->query("INSERT INTO viewCounter (date,hour,minute,product_id,count) VALUES (?,?,?,?,?)", $currentDate,$currentHour,$currentMin,$prodId,1);

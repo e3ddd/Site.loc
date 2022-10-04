@@ -67,7 +67,7 @@ for ($i = 0; $i < $pager->countPages(); $i++) {
             foreach ($images as $key => $image){
                 if($product['id'] == $image['product_id']){
                     $defaultImgLink = $image['user_id'] . "_" . $image['product_id'] . "_" . $image['hash_id'];
-                    $smallImgLink = $image['user_id'] . "_" . $image['product_id'] . "_" . "SMALL" . "_" . $image['hash_id'];
+                    $smallImgLink = $image['user_id'] . "_" . $image['product_id'] . "_SMALL_" . $image['hash_id'];
 
                     $imgitem->setContent('link', "assets/processedProductImg/" . $defaultImgLink)
                                ->setContent('image', "assets/processedProductImg/" . $defaultImgLink);

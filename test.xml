@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<products>
+  <product>
+    <name>Кабель TV 75 Ом коаксиальный FinMark (100м)</name>
+    <price>1073</price>
+  </product>
+  <product>
+    <name>F-разъём упаковка 100 шт</name>
+    <price>298</price>
+  </product>
+  <product>
+    <name>F-разъём 1 шт</name>
+    <price>26</price>
+  </product>
+  <product>
+    <name>F антенный Мама</name>
+    <price>30</price>
+  </product>
+  <product>
+    <name>Соединительная муфта F-разъёмов 1шт</name>
+    <price>37</price>
+  </product>
+  <product>
+    <name>F антенный Папа</name>
+    <price>29</price>
+  </product>
+</products>

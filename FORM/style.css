@@ -1,0 +1,163 @@
+body
+{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: 'Poppins', sans-serif;
+    background: -webkit-linear-gradient(left, #3931af, #00c6ff)
+}
+
+.container_1
+{
+    float: left;
+    color: white;
+    padding: 15% 0 0 15%;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.block h1
+{
+    font-size: 48px;
+}
+
+.block span
+{
+    font-size: 20px;
+}
+
+.block button
+{
+    margin-top: 60px;
+    border-radius: 20px;
+    width: 200px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    height: 40px;
+    text-align:center;
+    border: none;
+    background-size: 300% 100%;
+
+    moz-transition: all .4s ease-in-out;
+    -o-transition: all .4s ease-in-out;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+}
+
+.block button:focus
+{
+    outline: none;
+}
+
+.block button:hover
+{
+    cursor: pointer;
+    color: #fff;
+    background-image: linear-gradient(to right, #25aae1, #4481eb, #04befe, #3f86ed);
+    box-shadow: 0 4px 15px 0 rgba(65, 132, 234, 0.75);
+    background-position: 100% 0;
+    moz-transition: all .4s ease-in-out;
+    -o-transition: all .4s ease-in-out;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+}
+
+.container_2
+{
+    float: right;
+    width: 60%;
+    background: #f8f9fa;
+    border-top-left-radius: 10% 50%;
+    border-bottom-left-radius: 10% 50%;
+    margin-top: 12%;
+}
+
+.container_2 form
+{
+    padding: 100px;
+}
+
+.container_2 form .header h1
+{
+    text-align: center;
+    font-weight: lighter;
+    margin-bottom: 40px;
+}
+
+.container_2 .h5
+{
+    margin: 30px 30px 0px 0px;
+    padding: 10px;
+    float: right;
+    background: #0242e8;
+    border-radius: 20px;
+    width: 25%;
+}
+
+.item .header_a
+{
+    color: #ffff;
+    text-decoration: none;
+    font-size: 16px !important;
+}
+
+.container_2 form input#text
+{
+    margin: 5px;
+    width: 100%;
+    height: 40px;
+    border: 1px solid silver;
+    border-radius: 10px;
+    color: grey;
+    outline: #b3ebff;
+}
+
+.drop_down
+{
+    font-size: 14px !important;
+    outline: none !important;
+    margin: 7px !important;
+}
+
+.container_2 form #reg_btn
+{
+    float: right;
+    margin-top: 60px;
+    border-radius: 20px;
+    width: 200px;
+    font-size: 16px;
+    color: #ffffff;
+    background: #0242e8;
+    font-weight: 600;
+    cursor: pointer;
+    height: 40px;
+    text-align:center;
+    border: none;
+    background-size: 300% 100%;
+
+    moz-transition: all .4s ease-in-out;
+    -o-transition: all .4s ease-in-out;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+}
+
+.container_2 form #reg_btn
+{
+    outline: none;
+}
+
+.container_2 form #reg_btn:hover
+{
+    cursor: pointer;
+    color: #fff;
+    background-image: linear-gradient(to right, #25aae1, #4481eb, #04befe, #3f86ed);
+    box-shadow: 0 4px 15px 0 rgba(65, 132, 234, 0.75);
+    background-position: 100% 0;
+    moz-transition: all .4s ease-in-out;
+    -o-transition: all .4s ease-in-out;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+}

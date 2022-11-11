@@ -48,7 +48,6 @@ if(!empty($requests->search)){
     }
 }
 
-var_dump(date('h:i:s'));
 
 if(empty($requests->search)) {
     $pager = new Pager(
